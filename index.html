@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NM Trip — Dining Guide</title>
+<style>
+  :root {
+    --navy: #1F4E79;
+    --blue: #2E6DA4;
+    --light-blue: #D6E4F0;
+    --green: #2D6A4F;
+    --light-green: #D5E8D4;
+    --orange: #843C0C;
+    --light-orange: #FCE4D6;
+    --chase-blue: #117ACA;
+    --gold: #C9A84C;
+    --red: #8B0000;
+    --gray: #f5f5f5;
+    --border: #d0d8e0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #222; }
+
+  .header {
+    background: var(--navy);
+    color: white;
+    padding: 20px 32px 14px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.3px; }
+  .header p { font-size: 13px; opacity: 0.8; margin-top: 3px; }
+
+  .legend {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 32px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 600; }
+  .badge-vegan { background: #E8F5E9; color: #2D6A4F; border: 1px solid #A5D6A7; }
+  .badge-meat  { background: #FFEBEE; color: #8B0000; border: 1px solid #EF9A9A; }
+  .badge-chase { background: #E3F2FD; color: var(--chase-blue); border: 1px solid #90CAF9; font-size: 10px; }
+  .badge-res   { background: #FFF8E1; color: #7B5800; border: 1px solid #FFD54F; }
+  .badge-walkin{ background: #F3E5F5; color: #6A1B9A; border: 1px solid #CE93D8; }
+
+  .filters {
+    background: white;
+    padding: 12px 32px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--border);
+    align-items: center;
+  }
+  .filters span { font-size: 12px; font-weight: 600; color: #555; margin-right: 4px; }
+  .filter-btn {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.15s;
+    color: #444;
+  }
+  .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .filter-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+  .content { padding: 24px 32px; max-width: 1300px; }
+
+  .city-section { margin-bottom: 32px; }
+  .city-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2.5px solid;
+  }
+  .city-header.sf  { border-color: var(--blue); }
+  .city-header.taos{ border-color: var(--green); }
+  .city-header.abq { border-color: var(--orange); }
+  .city-header h2  { font-size: 17px; font-weight: 700; }
+  .city-header.sf  h2 { color: var(--navy); }
+  .city-header.taos h2{ color: var(--green); }
+  .city-header.abq h2 { color: var(--orange); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+
+  .card {
+    background: white;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+  .card.hidden { display: none; }
+
+  .card-header {
+    padding: 13px 16px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .card-header.sf   { background: var(--light-blue); }
+  .card-header.taos { background: var(--light-green); }
+  .card-header.abq  { background: var(--light-orange); }
+
+  .card-name { font-size: 14px; font-weight: 700; color: #1a1a1a; line-height: 1.3; }
+  .card-type { font-size: 11px; color: #666; margin-top: 2px; }
+
+  .badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+
+  .chase-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: var(--chase-blue);
+    color: white;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .chase-logo svg { width: 12px; height: 12px; }
+
+  .card-body { padding: 12px 16px; }
+  .card-desc { font-size: 12.5px; color: #444; line-height: 1.5; margin-bottom: 10px; }
+
+  .links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .link-btn:hover { opacity: 0.82; }
+  .link-menu     { background: #EEF2FF; color: #3730a3; border: 1px solid #C7D2FE; }
+  .link-opentable{ background: #DA3743; color: white; }
+  .link-website  { background: #F3F4F6; color: #374151; border: 1px solid #D1D5DB; }
+  .link-phone    { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+  .link-call     { background: #FEF9C3; color: #713F12; border: 1px solid #FDE047; }
+
+  .res-note {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #92400e;
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 5px;
+    padding: 4px 9px;
+    margin-bottom: 8px;
+  }
+
+  @media (max-width: 700px) {
+    .content { padding: 16px; }
+    .header, .legend, .filters { padding-left: 16px; padding-right: 16px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🌵 New Mexico Trip — Dining Guide</h1>
+    <p>Menu & reservation links for all recommended restaurants · July 13–21, 2026</p>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="badge badge-vegan">🌱 Fully Vegan</span> dedicated vegan menu</div>
+  <div class="legend-item"><span class="badge badge-vegan">🌿 Vegan-Friendly</span> strong plant-based options</div>
+  <div class="legend-item"><span class="badge badge-meat">🥩 Carnivore Pick</span> meat-forward</div>
+  <div class="legend-item"><span class="chase-logo">⚡ Chase</span> OpenTable Chase dining credit eligible</div>
+  <div class="legend-item"><span class="badge badge-res">📅 Reserve Ahead</span></div>
+  <div class="legend-item"><span class="badge badge-walkin">🚶 Walk-in OK</span></div>
+</div>
+
+<div class="filters">
+  <span>Filter:</span>
+  <button class="filter-btn active" onclick="filter('all', this)">All</button>
+  <button class="filter-btn" onclick="filter('santa-fe', this)">Santa Fe</button>
+  <button class="filter-btn" onclick="filter('taos', this)">Taos</button>
+  <button class="filter-btn" onclick="filter('albuquerque', this)">Albuquerque</button>
+  <button class="filter-btn" onclick="filter('vegan', this)">🌱 Vegan/Vegan-Friendly</button>
+  <button class="filter-btn" onclick="filter('meat', this)">🥩 Carnivore Picks</button>
+  <button class="filter-btn" onclick="filter('chase', this)">⚡ Chase OpenTable</button>
+  <button class="filter-btn" onclick="filter('reserve', this)">📅 Needs Reservation</button>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════ SANTA FE ═══════════════════════════════ -->
+<div class="city-section">
+  <div class="city-header sf">
+    <h2>🔵 Santa Fe</h2>
+    <span style="font-size:13px;color:#666;">July 13–16 &amp; July 19–21</span>
+  </div>
+  <div class="grid">
+
+    <div class="card" data-city="santa-fe" data-tags="vegan meat reserve chase">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Geronimo</div>
+          <div class="card-type">Fine Dining · Canyon Road · 724 Canyon Rd</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve ASAP</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="res-note">⚠️ Books 2–3 weeks out in July. Reserve immediately.</div>
+        <div class="card-desc">NM's only Mobil 4-Star &amp; AAA 4-Diamond. Elk tenderloin, bison, seasonal vegetarian tasting menu. 1756 adobe home on Canyon Road. Best last-night splurge in Santa Fe.</div>
+        <div class="links">
+          <a class="link-btn link-opentable" href="https://www.opentable.com/geronimo-santa-fe" target="_blank">🔴 OpenTable</a>
+          <a class="link-btn link-menu" href="https://www.geronimorestaurant.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.geronimorestaurant.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan meat reserve chase">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Arroyo Vino</div>
+          <div class="card-type">Farm-to-Table · 218 Camino La Tierra</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve 1–2 weeks ahead</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="res-note">⚠️ Tue–Sat only, seatings 5–8 PM. Book before Opera night (Jul 14).</div>
+        <div class="card-desc">Seasonal farm-to-table with an attached wine shop. Always has a veggie main. Best sunset views in Santa Fe. Great pre-Opera dinner. Kitchen garden sourced.</div>
+        <div class="links">
+          <a class="link-btn link-opentable" href="https://www.opentable.com/arroyo-vino" target="_blank">🔴 OpenTable</a>
+          <a class="link-btn link-menu" href="https://arroyovino.com" target="_blank">📋 Menu (seasonal)</a>
+          <a class="link-btn link-website" href="https://arroyovino.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan meat reserve chase">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Restaurant Martin</div>
+          <div class="card-type">Fine Dining · Contemporary American · 526 Galisteo St</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve ahead</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">James Beard finalist for Best Chef Southwest (multiple years). French technique meets NM ingredients. Organic meats, local produce. Beautiful patio. Family-owned.</div>
+        <div class="links">
+          <a class="link-btn link-opentable" href="https://www.opentable.com/restaurant-martin" target="_blank">🔴 OpenTable</a>
+          <a class="link-btn link-menu" href="https://restaurantmartinsantafe.com/menus/" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://restaurantmartinsantafe.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan meat reserve chase">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Horno Restaurant</div>
+          <div class="card-type">Gastropub · Near Plaza · 95 W Marcy St</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve a few days ahead</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">James Beard-nominated Chef David Sellers. Upscale gastropub, seasonal world-inspired small plates. Vegan dumplings + vegan chocolate cake. Al fresco patio. Steps from the Plaza.</div>
+        <div class="links">
+          <a class="link-btn link-opentable" href="https://www.opentable.com/r/horno-restaurant-santa-fe" target="_blank">🔴 OpenTable</a>
+          <a class="link-btn link-menu" href="https://www.hornorestaurant.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.hornorestaurant.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan meat reserve chase">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Paloma</div>
+          <div class="card-type">Contemporary Mexican · 401 S Guadalupe St</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve same/next day</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Scratch-made masa, mezcal-forward bar, vivid Mexican-inspired menu. Cauliflower dishes for vegans, solid meat mains. Free parking after 6 PM. Open late kitchen.</div>
+        <div class="links">
+          <a class="link-btn link-opentable" href="https://www.opentable.com/r/paloma-santa-fe" target="_blank">🔴 OpenTable</a>
+          <a class="link-btn link-menu" href="https://paloma-sf.com/menus" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://paloma-sf.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan walkin">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Cafecito</div>
+          <div class="card-type">Casual · Vegan-Friendly · 500 Old Santa Fe Trail</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌱 Fully Vegan Options</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Beautiful patio, vegan "three sisters" empanadas, De La Tierra bowl (lentils, cauliflower, beets, squash, kale). Great lunch spot near Museum Hill.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://cafecitosantafe.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://cafecitosantafe.com" target="_blank">🌐 Website</a>
+          <a class="link-btn link-call" href="tel:+15059860500">📞 Call</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan walkin">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Sweetwater Harvest Kitchen</div>
+          <div class="card-type">Vegan / GF · 1512 Pacheco St</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌱 Fully Vegan</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Dedicated gluten-free facility. Daily specials, mushroom tea lattes, vegan and paleo options. Fine dining quality meets cozy café vibe. Great for breakfast or lunch.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.sweetwaterharvestkitchen.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.sweetwaterharvestkitchen.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan walkin">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Annapurna's World Vegetarian Cafe</div>
+          <div class="card-type">Ayurvedic · Vegetarian/Vegan · 1624 Cerrillos Rd</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌱 Fully Vegan / Vegetarian</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Cardamom pancakes with coconut and almonds, best chai in Santa Fe. Full GF/DF bakery. Opens 7 AM — ideal departure-day breakfast before heading to the airport.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.chaishoppe.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.chaishoppe.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="meat walkin">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Rio Chama Prime Steakhouse</div>
+          <div class="card-type">Steakhouse · 414 Old Santa Fe Trail</div>
+          <div class="badges">
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-walkin">🚶 Bar seating available</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Santa Fe's top steakhouse. Prime rib, bone-in ribeye, filet mignon, oysters to start. Great for pre-Opera dinner. Full bar. Classic Santa Fe atmosphere.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.riochamasteakhouse.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.riochamasteakhouse.com" target="_blank">🌐 Website</a>
+          <a class="link-btn link-call" href="tel:+15059554949">📞 Call for Res</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="meat walkin">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">The Bull Ring</div>
+          <div class="card-type">Classic Chophouse · 150 Washington Ave</div>
+          <div class="badges">
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Santa Fe institution since 1975. Prime rib, classic cuts, full bar, power lunch crowd. Good late-night option near the Plaza. Longtime local favorite.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.thebullringsantafe.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.thebullringsantafe.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan meat walkin">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">El Farol</div>
+          <div class="card-type">Spanish Tapas · Canyon Road · 808 Canyon Rd</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-walkin">🚶 Bar walk-in</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Spanish tapas with flamenco dancing and live entertainment on Canyon Road. Vegan options among the small plates. Great last-night vibe. Oldest restaurant in Santa Fe.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://elfarolsf.com/menus/" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://elfarolsf.com" target="_blank">🌐 Website</a>
+          <a class="link-btn link-call" href="tel:+15059839912">📞 Call for Res</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan walkin">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Tomasita's</div>
+          <div class="card-type">Classic NM · 500 S Guadalupe St</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-walkin">🚶 Walk-in (expect wait)</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Best beans in Santa Fe (vegan). Authentic New Mexican: green/red chile, smothered burritos, enchiladas. No-frills, cash-only vibe. Locals love it. Expect a line.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.tomasitas.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.tomasitas.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ TAOS ═══════════════════════════════════ -->
+<div class="city-section">
+  <div class="city-header taos">
+    <h2>🟢 Taos</h2>
+    <span style="font-size:13px;color:#666;">July 16–17</span>
+  </div>
+  <div class="grid">
+
+    <div class="card" data-city="taos" data-tags="vegan meat reserve">
+      <div class="card-header taos">
+        <div>
+          <div class="card-name">The Love Apple</div>
+          <div class="card-type">Organic · Farm-to-Table · 803 Paseo Del Pueblo Norte</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve ASAP · Phone Only</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="res-note">⚠️ No OpenTable — call (575) 751-0050. Fills every night in July. Reserve now.</div>
+        <div class="card-desc">Intimate restaurant in a converted 1800s chapel. Gnocchi with carrot butter (vegan), duck breast, lamb albondigas. Wed–Sun, 5–9 PM only. One of the best in NM.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://theloveapple.net/pdf/love_apple_taos_dinner_menu.pdf" target="_blank">📋 Menu (PDF)</a>
+          <a class="link-btn link-website" href="https://theloveapple.net" target="_blank">🌐 Website</a>
+          <a class="link-btn link-phone" href="tel:+15757510050">📞 (575) 751-0050</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="taos" data-tags="meat reserve">
+      <div class="card-header taos">
+        <div>
+          <div class="card-name">Lambert's of Taos</div>
+          <div class="card-type">Fine Dining · 309 Paseo Del Pueblo Sur</div>
+          <div class="badges">
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve ahead (Las Fiestas wknd)</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="res-note">⚠️ Very busy Jul 17–19 during Las Fiestas. Book in advance.</div>
+        <div class="card-desc">Fine dining since 1989. CAB petit filet mignon, duck breast, buffalo tenderloin. Tree-shaded patio. Upscale but relaxed. Taos's most reliable fine dining institution.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://lambertsoftaos.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://lambertsoftaos.com" target="_blank">🌐 Website</a>
+          <a class="link-btn link-call" href="tel:+15757589009">📞 Call for Res</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="taos" data-tags="vegan meat reserve">
+      <div class="card-header taos">
+        <div>
+          <div class="card-name">La Luna @ La Fonda</div>
+          <div class="card-type">Indigenous Fine Dining · Taos Plaza</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve ahead</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">One of only a handful of US restaurants dedicated to elevated Indigenous cuisine. Ancestral ingredients from North, Central and South America. Unique &amp; unforgettable.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://lafondetaos.com/dining" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://lafondetaos.com" target="_blank">🌐 Website</a>
+          <a class="link-btn link-call" href="tel:+15757582211">📞 Call for Res</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="taos" data-tags="vegan meat walkin">
+      <div class="card-header taos">
+        <div>
+          <div class="card-name">Bent Street Grille</div>
+          <div class="card-type">American Bistro · 120 Bent St</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Casual country-style brunch &amp; lunch. Authentic northern NM flavors, scratch-made sauces. Best breakfast/lunch spot in Taos. Vegan and meat options throughout.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://bentstreetgrille.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://bentstreetgrille.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="taos" data-tags="meat walkin">
+      <div class="card-header taos">
+        <div>
+          <div class="card-name">5 Star Burgers</div>
+          <div class="card-type">Burgers · 1032 Paseo Del Pueblo Sur</div>
+          <div class="badges">
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">USA Today "Best Burger in New Mexico." Hormone-free Angus beef ground daily. Green chile cheeseburger is the move. Casual, quick, excellent. Great lunch before driving to ABQ.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.5starburgers.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.5starburgers.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ ALBUQUERQUE ════════════════════════════ -->
+<div class="city-section">
+  <div class="city-header abq">
+    <h2>🟠 Albuquerque</h2>
+    <span style="font-size:13px;color:#666;">July 17–20</span>
+  </div>
+  <div class="grid">
+
+    <div class="card" data-city="albuquerque" data-tags="vegan meat reserve chase">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Campo at Los Poblanos</div>
+          <div class="card-type">Farm-to-Table · 4803 Rio Grande Blvd NW</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve 2–3 weeks out</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="res-note">⚠️ Most sought-after reservation in ABQ. Book immediately for Jul 18 or 19.</div>
+        <div class="card-desc">Farm-to-table on 10-acre organic lavender farm. Rio Grande Valley cuisine, seasonal organic ingredients. Stunning outdoor patio. Vegan and meat dishes equally exceptional.</div>
+        <div class="links">
+          <a class="link-btn link-website" href="https://lospoblanos.com/dining/campo-reservations" target="_blank">🔴 Reserve Online</a>
+          <a class="link-btn link-menu" href="https://lospoblanos.com/dining/campo-menus" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://lospoblanos.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="albuquerque" data-tags="vegan meat reserve chase">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Seasons Rotisserie &amp; Grill</div>
+          <div class="card-type">Casual Elegant · Old Town · 2031 Mountain Rd NW</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve on weekends</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">ABQ's top mixed-diet restaurant. Wood-burning rotisserie, Kobe ribeye, jumbo scallops, vegan polenta. Rooftop patio with Happy Hour Wed–Sun. Overlooks Old Town.</div>
+        <div class="links">
+          <a class="link-btn link-opentable" href="https://www.opentable.com/r/seasons-rotisserie-and-grill-albuquerque" target="_blank">🔴 OpenTable</a>
+          <a class="link-btn link-menu" href="https://www.seasonsabq.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.seasonsabq.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="albuquerque" data-tags="vegan meat reserve chase">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Vintage 423</div>
+          <div class="card-type">Steakhouse · 423 Central Ave NW</div>
+          <div class="badges">
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve ahead on weekends</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">ABQ's premier steakhouse. USDA Prime &amp; Choice cuts, Wine Spectator-honored wine list, craft cocktails. "Best filet in a long while." Upscale but welcoming. Downtown Route 66.</div>
+        <div class="links">
+          <a class="link-btn link-opentable" href="https://www.opentable.com/vintage-423-reservations-albuquerque" target="_blank">🔴 OpenTable</a>
+          <a class="link-btn link-menu" href="https://vintage423.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://vintage423.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="albuquerque" data-tags="vegan meat reserve">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Artichoke Cafe</div>
+          <div class="card-type">Contemporary American · 424 Central Ave SE</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve for weekends</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">One of ABQ's most beloved gathering places. New American with French/Italian influences. Always a vegan option on the rotating menu. Great wine bar. Retro-cool EDO neighborhood.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.artichokecafe.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.artichokecafe.com" target="_blank">🌐 Website</a>
+          <a class="link-btn link-call" href="tel:+15052431301">📞 Call for Res</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="albuquerque" data-tags="meat reserve chase">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Char at Hotel Andaluz</div>
+          <div class="card-type">Contemporary NM · 125 2nd St NW</div>
+          <div class="badges">
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve on weekends</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">NM's only Josper charcoal grill. Live-fire meats and contemporary NM cuisine. Built inside Conrad Hilton's 1939 hotel. Rooftop G. Toti bar with skyline views. Best hotel dining in ABQ.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://hotelandaluz.com/dining/char" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://hotelandaluz.com/dining" target="_blank">🌐 Website</a>
+          <a class="link-btn link-call" href="tel:+15052423900">📞 Call for Res</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="albuquerque" data-tags="vegan meat walkin">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Farina Pizza</div>
+          <div class="card-type">Pizza · 510 Central Ave SE</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌱 Vegan Options</span>
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Potentially the best pizza outside NYC. Vegan cheese and vegan crusts available. Lively bar, Nob Hill neighborhood energy. Next-door sister restaurant to Artichoke Cafe.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.farinabistro.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.farinabistro.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="albuquerque" data-tags="vegan walkin">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Annapurna's World Vegetarian Cafe</div>
+          <div class="card-type">Ayurvedic · Multiple Locations</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌱 Fully Vegan / Vegetarian</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Ayurvedic Indian — cardamom pancakes, tofu scramble, South Indian sampler, Lebanese wrap. GF and sugar-free bakery. Where this mini-chain started (2002). Multiple ABQ locations.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.chaishoppe.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.chaishoppe.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="albuquerque" data-tags="vegan walkin">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Vegos</div>
+          <div class="card-type">Plant-Based Mexican · Nob Hill</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌱 Fully Vegan</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK · Wed–Sun</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Plant-based Mexican with authentic spices. Papaya salad and fresh rolls great for raw vegans. Local favorite. Open Wed–Sun only — plan ahead for your ABQ weekend.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://vegosabq.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://vegosabq.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="albuquerque" data-tags="meat walkin">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Antiquity Restaurant</div>
+          <div class="card-type">Wild Game · Steakhouse · Old Town · 112 Romero St NW</div>
+          <div class="badges">
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Old Town ABQ institution in a landmark 1785 building. Wild game, seasonal meats, hand-crafted margaritas. 47+ years serving exceptional steaks in a historic adobe. Santos lounge inside.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.antiquityrestaurant.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.antiquityrestaurant.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="albuquerque" data-tags="vegan walkin">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Squeezed Juice Bar</div>
+          <div class="card-type">Raw / Juice Bar · Northeast Heights</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌱 Raw / Vegan</span>
+            <span class="badge badge-walkin">🚶 Walk-in OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Best raw food stop in ABQ. Locally owned, farm-to-table fresh juices, acai bowls, smoothies. Fully vegetarian with strong vegan options. Great morning stop.</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://squeezedjuicebar.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://squeezedjuicebar.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="text-align:center; font-size:11px; color:#999; padding: 8px 0 24px;">
+  ⚡ Chase = eligible for Chase Sapphire OpenTable dining credit · Links verified July 2026
+</div>
+
+</div>
+
+<script>
+function filter(tag, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.card').forEach(card => {
+    if (tag === 'all') {
+      card.classList.remove('hidden');
+      return;
+    }
+    const city = card.dataset.city;
+    const tags = (card.dataset.tags || '').split(' ');
+
+    let show = false;
+    if (tag === 'santa-fe')    show = city === 'santa-fe';
+    else if (tag === 'taos')   show = city === 'taos';
+    else if (tag === 'albuquerque') show = city === 'albuquerque';
+    else if (tag === 'vegan')  show = tags.includes('vegan');
+    else if (tag === 'meat')   show = tags.includes('meat');
+    else if (tag === 'chase')  show = tags.includes('chase');
+    else if (tag === 'reserve')show = tags.includes('reserve');
+
+    card.classList.toggle('hidden', !show);
+  });
+}
+</script>
+</body>
+</html>
