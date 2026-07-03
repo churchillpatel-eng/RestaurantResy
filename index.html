@@ -174,6 +174,38 @@
     margin-bottom: 8px;
   }
 
+  .state-section {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .state-summary {
+    cursor: pointer;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+  }
+  .state-summary::-webkit-details-marker { display: none; }
+  .state-summary::after {
+    content: '▸';
+    font-size: 12px;
+    color: #888;
+    transition: transform 0.15s;
+  }
+  .state-section[open] > .state-summary::after { transform: rotate(90deg); }
+  .state-summary:hover { background: #f8fafc; }
+  .state-count { font-size: 12px; font-weight: 500; color: #888; margin-left: 8px; }
+  .state-body { padding: 4px 20px 20px; }
+  .state-empty { font-size: 13px; color: #888; padding: 4px 0 16px; }
+
   @media (max-width: 700px) {
     .content { padding: 16px; }
     .header, .legend, .filters { padding-left: 16px; padding-right: 16px; }
@@ -212,6 +244,220 @@
 </div>
 
 <div class="content">
+
+<details class="state-section">
+  <summary class="state-summary">Alabama</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Alaska</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Arizona</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Arkansas</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">California</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Colorado</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Connecticut</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Delaware</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Florida</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Georgia</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Hawaii</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Idaho</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Illinois</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Indiana</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Iowa</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Kansas</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Kentucky</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Louisiana</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Maine</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Maryland</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Massachusetts</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Michigan</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Minnesota</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Mississippi</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Missouri</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Montana</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Nebraska</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Nevada</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">New Hampshire</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">New Jersey</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section" open>
+  <summary class="state-summary">New Mexico <span class="state-count">(30 spots)</span></summary>
+  <div class="state-body">
 
 <!-- ═══════════════════════════════ SANTA FE ═══════════════════════════════ -->
 <div class="city-section">
@@ -334,6 +580,51 @@
           <a class="link-btn link-opentable" href="https://www.opentable.com/r/paloma-santa-fe" target="_blank">🔴 OpenTable</a>
           <a class="link-btn link-menu" href="https://paloma-sf.com/menus" target="_blank">📋 Menu</a>
           <a class="link-btn link-website" href="https://paloma-sf.com" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="meat reserve chase">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">La Plazuela at La Fonda</div>
+          <div class="card-type">New Mexican · Inside La Fonda on the Plaza · 100 E San Francisco St</div>
+          <div class="badges">
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve for dinner</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="res-note">⚠️ Breakfast &amp; lunch are walk-in only; dinner reservations recommended.</div>
+        <div class="card-desc">Historic 1920s indoor courtyard with skylights, steps from the Plaza. Innovative New Mexican classics — tortilla soup, tableside guacamole, enchiladas, filet mignon. Santa Fe's most romantic dining room.</div>
+        <div class="links">
+          <a class="link-btn link-opentable" href="https://www.opentable.com/la-plazuela-at-la-fonda-on-the-plaza" target="_blank">🔴 OpenTable</a>
+          <a class="link-btn link-menu" href="https://lafondasantafe.com/dinner-menu/" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://lafondasantafe.com/la-plazuela/" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-city="santa-fe" data-tags="vegan reserve chase">
+      <div class="card-header sf">
+        <div>
+          <div class="card-name">Santa Fe Teahouse &amp; Bistro</div>
+          <div class="card-type">Bistro · Top of Canyon Road · 821 Canyon Rd</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌿 Vegan-Friendly</span>
+            <span class="badge badge-res">📅 Reserve or walk-in</span>
+          </div>
+        </div>
+        <span class="chase-logo">⚡ Chase</span>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">80+ teas, espresso drinks, and tea-infused cocktails from a 99% gluten-free scratch kitchen with vegetarian and vegan options. Dog-friendly garden patio, frequent live music. Open Wed–Sun, 8 AM–3 PM.</div>
+        <div class="links">
+          <a class="link-btn link-opentable" href="https://www.opentable.com/r/santa-fe-teahouse-and-bistro-santa-fe" target="_blank">🔴 OpenTable</a>
+          <a class="link-btn link-menu" href="https://www.santafeteahouse.com/pages/breakfast" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.santafeteahouse.com" target="_blank">🌐 Website</a>
         </div>
       </div>
     </div>
@@ -826,8 +1117,165 @@
       </div>
     </div>
 
+    <div class="card" data-city="albuquerque" data-tags="vegan walkin">
+      <div class="card-header abq">
+        <div>
+          <div class="card-name">Itality: Plant Based Foods</div>
+          <div class="card-type">Indigenous Vegan · 2500 12th St NW, Unit E</div>
+          <div class="badges">
+            <span class="badge badge-vegan">🌱 Fully Vegan</span>
+            <span class="badge badge-walkin">🚶 Counter Service</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Indigenous vegan restaurant in Avanyu Plaza. NDN tacos with fry bread, blue corn waffles, OG nachos supreme with quinoa. Counter-order, dine-in patio or to-go. No reservations — call ahead to confirm hours (Wed–Sun).</div>
+        <div class="links">
+          <a class="link-btn link-menu" href="https://www.italitynm.com/menu" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://www.italitynm.com" target="_blank">🌐 Website</a>
+          <a class="link-btn link-call" href="tel:+15054512861">📞 Call</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
+
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">New York</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">North Carolina</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">North Dakota</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Ohio</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Oklahoma</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Oregon</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Pennsylvania</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Rhode Island</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">South Carolina</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">South Dakota</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Tennessee</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Texas</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Utah</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Vermont</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Virginia</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Washington</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">West Virginia</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Wisconsin</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
+
+<details class="state-section">
+  <summary class="state-summary">Wyoming</summary>
+  <div class="state-body">
+    <p class="state-empty">No dining recs added yet.</p>
+  </div>
+</details>
 
 <div style="text-align:center; font-size:11px; color:#999; padding: 8px 0 24px;">
   ⚡ Chase = eligible for Chase Sapphire OpenTable dining credit · Links verified July 2026
