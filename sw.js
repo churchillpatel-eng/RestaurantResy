@@ -1,4 +1,4 @@
-const CACHE = 'nm-dining-v1';
+const CACHE = 'nm-dining-v2';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', event => {
