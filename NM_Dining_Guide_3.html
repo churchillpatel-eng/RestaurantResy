@@ -87,11 +87,12 @@
     margin-bottom: 14px;
     padding-bottom: 8px;
     border-bottom: 2.5px solid;
+    border-color: var(--blue);
   }
   .city-header.sf  { border-color: var(--blue); }
   .city-header.taos{ border-color: var(--green); }
   .city-header.abq { border-color: var(--orange); }
-  .city-header h2  { font-size: 17px; font-weight: 700; }
+  .city-header h2  { font-size: 17px; font-weight: 700; color: var(--navy); }
   .city-header.sf  h2 { color: var(--navy); }
   .city-header.taos h2{ color: var(--green); }
   .city-header.abq h2 { color: var(--orange); }
@@ -115,6 +116,7 @@
     align-items: flex-start;
     gap: 8px;
   }
+  .card-header      { background: var(--light-blue); }
   .card-header.sf   { background: var(--light-blue); }
   .card-header.taos { background: var(--light-green); }
   .card-header.abq  { background: var(--light-orange); }
@@ -157,6 +159,7 @@
   .link-btn:hover { opacity: 0.82; }
   .link-menu     { background: #EEF2FF; color: #3730a3; border: 1px solid #C7D2FE; }
   .link-opentable{ background: #DA3743; color: white; }
+  .link-resy     { background: #1A1A1A; color: white; }
   .link-website  { background: #F3F4F6; color: #374151; border: 1px solid #D1D5DB; }
   .link-phone    { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
   .link-call     { background: #FEF9C3; color: #713F12; border: 1px solid #FDE047; }
@@ -1145,9 +1148,40 @@
 </details>
 
 <details class="state-section">
-  <summary class="state-summary">New York</summary>
+  <summary class="state-summary">New York <span class="state-count">(1 spot)</span></summary>
   <div class="state-body">
-    <p class="state-empty">No dining recs added yet.</p>
+
+<div class="city-section">
+  <div class="city-header">
+    <h2>New York City</h2>
+  </div>
+  <div class="grid">
+
+    <div class="card" data-city="new-york-city" data-tags="meat reserve">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Ambassadors Clubhouse</div>
+          <div class="card-type">Northern Indian · NoMad · 1245 Broadway</div>
+          <div class="badges">
+            <span class="badge badge-meat">🥩 Carnivore Pick</span>
+            <span class="badge badge-res">📅 Reserve via Resy only</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="res-note">⚠️ No OpenTable, phone, or walk-in (except same-day cancellations). Resy releases tables twice a month: 1st for days 1–15, 15th for the rest of the month.</div>
+        <div class="card-desc">Punjab-inspired Northern Indian cuisine — papads &amp; chaat, tandoor &amp; kebabs, biryani &amp; pilau — served with theatrical tableside flair in Manhattan's NoMad neighborhood.</div>
+        <div class="links">
+          <a class="link-btn link-resy" href="https://resy.com/cities/new-york-ny/venues/ambassadors-clubhouse-new-york" target="_blank">⚫ Resy</a>
+          <a class="link-btn link-menu" href="https://ambassadorsclubhouse.com/newyork/food-drink/" target="_blank">📋 Menu</a>
+          <a class="link-btn link-website" href="https://ambassadorsclubhouse.com/newyork/" target="_blank">🌐 Website</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
   </div>
 </details>
 
