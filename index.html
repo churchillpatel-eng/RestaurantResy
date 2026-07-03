@@ -53,6 +53,22 @@
   .badge-res   { background: #FFF8E1; color: #7B5800; border: 1px solid #FFD54F; }
   .badge-walkin{ background: #F3E5F5; color: #6A1B9A; border: 1px solid #CE93D8; }
 
+  .search-bar {
+    background: white;
+    padding: 14px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-bar input {
+    width: 100%;
+    max-width: 480px;
+    padding: 9px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    outline: none;
+  }
+  .search-bar input:focus { border-color: var(--blue); }
+
   .filters {
     background: white;
     padding: 12px 32px;
@@ -223,6 +239,10 @@
     <h1>🌵 New Mexico Trip — Dining Guide</h1>
     <p>Menu & reservation links for all recommended restaurants · July 13–21, 2026</p>
   </div>
+</div>
+
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="🔍 Search restaurants by name, cuisine, or city…" oninput="applyFilters()">
 </div>
 
 <div class="legend">
@@ -458,7 +478,7 @@
   </div>
 </details>
 
-<details class="state-section" open>
+<details class="state-section" open data-default-open>
   <summary class="state-summary">New Mexico <span class="state-count">(30 spots)</span></summary>
   <div class="state-body">
 
@@ -1318,28 +1338,43 @@
 </div>
 
 <script>
+let currentFilter = 'all';
+
+function matchesTag(card, tag) {
+  if (tag === 'all') return true;
+  const city = card.dataset.city;
+  const tags = (card.dataset.tags || '').split(' ');
+  if (tag === 'santa-fe')    return city === 'santa-fe';
+  if (tag === 'taos')        return city === 'taos';
+  if (tag === 'albuquerque') return city === 'albuquerque';
+  if (tag === 'vegan')       return tags.includes('vegan');
+  if (tag === 'meat')        return tags.includes('meat');
+  if (tag === 'chase')       return tags.includes('chase');
+  if (tag === 'reserve')     return tags.includes('reserve');
+  return true;
+}
+
 function filter(tag, btn) {
+  currentFilter = tag;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  applyFilters();
+}
 
-  document.querySelectorAll('.card').forEach(card => {
-    if (tag === 'all') {
-      card.classList.remove('hidden');
-      return;
-    }
-    const city = card.dataset.city;
-    const tags = (card.dataset.tags || '').split(' ');
+function applyFilters() {
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
 
-    let show = false;
-    if (tag === 'santa-fe')    show = city === 'santa-fe';
-    else if (tag === 'taos')   show = city === 'taos';
-    else if (tag === 'albuquerque') show = city === 'albuquerque';
-    else if (tag === 'vegan')  show = tags.includes('vegan');
-    else if (tag === 'meat')   show = tags.includes('meat');
-    else if (tag === 'chase')  show = tags.includes('chase');
-    else if (tag === 'reserve')show = tags.includes('reserve');
+  document.querySelectorAll('.state-section').forEach(section => {
+    let anyVisible = false;
 
-    card.classList.toggle('hidden', !show);
+    section.querySelectorAll('.card').forEach(card => {
+      const matchesSearch = query === '' || card.textContent.toLowerCase().includes(query);
+      const show = matchesSearch && matchesTag(card, currentFilter);
+      card.classList.toggle('hidden', !show);
+      if (show) anyVisible = true;
+    });
+
+    section.open = query === '' ? section.hasAttribute('data-default-open') : anyVisible;
   });
 }
 
