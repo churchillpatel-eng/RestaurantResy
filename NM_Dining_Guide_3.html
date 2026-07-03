@@ -1363,6 +1363,8 @@ function filter(tag, btn) {
 
 function applyFilters() {
   const query = document.getElementById('searchInput').value.trim().toLowerCase();
+  const isFiltering = query !== '' || currentFilter !== 'all';
+  let firstVisible = null;
 
   document.querySelectorAll('.state-section').forEach(section => {
     let anyVisible = false;
@@ -1371,11 +1373,18 @@ function applyFilters() {
       const matchesSearch = query === '' || card.textContent.toLowerCase().includes(query);
       const show = matchesSearch && matchesTag(card, currentFilter);
       card.classList.toggle('hidden', !show);
-      if (show) anyVisible = true;
+      if (show) {
+        anyVisible = true;
+        if (!firstVisible) firstVisible = card;
+      }
     });
 
-    section.open = query === '' ? section.hasAttribute('data-default-open') : anyVisible;
+    section.open = isFiltering ? anyVisible : section.hasAttribute('data-default-open');
   });
+
+  if (isFiltering && firstVisible) {
+    firstVisible.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
 
 if ('serviceWorker' in navigator) {
