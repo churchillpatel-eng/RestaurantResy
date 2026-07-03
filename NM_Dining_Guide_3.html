@@ -225,10 +225,34 @@
   .state-body { padding: 4px 20px 20px; }
   .state-empty { font-size: 13px; color: #888; padding: 4px 0 16px; }
 
+  .back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: white;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: opacity 0.2s, transform 0.2s, background 0.15s;
+    z-index: 999;
+  }
+  .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .back-to-top:hover { background: var(--blue); }
+
   @media (max-width: 700px) {
     .content { padding: 16px; }
     .header, .legend, .filters { padding-left: 16px; padding-right: 16px; }
     .grid { grid-template-columns: 1fr; }
+    .back-to-top { bottom: 16px; right: 16px; }
   }
 </style>
 </head>
@@ -1337,6 +1361,8 @@
 
 </div>
 
+<button class="back-to-top" id="backToTop" onclick="scrollToTop()" aria-label="Back to top">↑</button>
+
 <script>
 let currentFilter = 'all';
 
@@ -1389,6 +1415,15 @@ function applyFilters() {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+}
+
+const backToTopBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+  backToTopBtn.classList.toggle('visible', window.scrollY > 400);
+});
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
 </body>
