@@ -288,9 +288,10 @@
   .modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: #666; }
   #addForm { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
   #addForm label { font-size: 12px; font-weight: 600; color: #444; display: flex; flex-direction: column; gap: 4px; }
-  #addForm input, #addForm textarea {
+  #addForm input, #addForm textarea, #addForm select {
     font-size: 13px; font-weight: 400; padding: 8px 10px;
     border: 1.5px solid var(--border); border-radius: 6px; font-family: inherit;
+    background: white;
   }
   #addForm textarea { min-height: 60px; resize: vertical; }
   .tag-checks { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 500; color: #444; }
