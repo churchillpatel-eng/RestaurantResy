@@ -166,8 +166,10 @@ class AppModalElement extends HTMLElement {
   }
 
   _onOpen() {
+    // Visibility itself is driven by the CSS `app-modal.modal-overlay[open]`
+    // rule, not inline styles — keeps this component from fighting the
+    // stylesheet over which one "wins" (see style.css for why that matters).
     this._triggerEl = document.activeElement;
-    this.style.display = 'flex';
     document.addEventListener('keydown', this._onKeydown);
     const preferred = this._panel.querySelector('[autofocus]');
     const focusable = this._focusable();
@@ -175,7 +177,6 @@ class AppModalElement extends HTMLElement {
   }
 
   _onClose() {
-    this.style.display = 'none';
     document.removeEventListener('keydown', this._onKeydown);
     this._triggerEl?.focus?.();
   }

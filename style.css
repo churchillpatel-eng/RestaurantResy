@@ -350,7 +350,12 @@
   .empty-state-action:empty { display: none; }
 
   /* ── <app-modal> ──────────────────────────────────────────────────────────── */
-  app-modal { display: none; }
+  /* Higher specificity than the plain .modal-overlay class rule above, so
+     visibility is driven purely by the `open` attribute — not a JS/CSS
+     specificity race (a class-selector "display:flex" would otherwise beat
+     a type-selector "display:none" and show the modal on every page load). */
+  app-modal.modal-overlay { display: none; }
+  app-modal.modal-overlay[open] { display: flex; }
   app-modal [role="dialog"]:focus { outline: none; }
 
   /* ── Skeleton loading ─────────────────────────────────────────────────────── */
