@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NM Trip — Dining Guide</title>
+<title>Churchill & Sejal's Dining Guide</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1F4E79">
 <link rel="stylesheet" href="style.css">
@@ -12,9 +12,9 @@
 
 <div class="header">
   <div>
-    <h1>🌵 New Mexico Trip — Dining Guide</h1>
-    <p>Menu & reservation links for all recommended restaurants · July 13–21, 2026</p>
+    <h1>🍽️ Churchill & Sejal's Dining Guide</h1>
   </div>
+  <button class="btn-add-restaurant" onclick="openAddModal()">+ Add Restaurant</button>
 </div>
 
 <div class="search-bar">
@@ -28,14 +28,13 @@
   <div class="legend-item"><span class="chase-logo">⚡ Chase</span> OpenTable Chase dining credit eligible</div>
   <div class="legend-item"><span class="badge badge-res">📅 Reserve Ahead</span></div>
   <div class="legend-item"><span class="badge badge-walkin">🚶 Walk-in OK</span></div>
+  <div class="legend-item"><span class="badge badge-visited">✓ Visited</span></div>
 </div>
 
 <div class="filters">
   <span>Filter:</span>
   <button class="filter-btn active" onclick="filter('all', this)">All</button>
-  <button class="filter-btn" onclick="filter('santa-fe', this)">Santa Fe</button>
-  <button class="filter-btn" onclick="filter('taos', this)">Taos</button>
-  <button class="filter-btn" onclick="filter('albuquerque', this)">Albuquerque</button>
+  <span id="cityFilters"></span>
   <button class="filter-btn" onclick="filter('vegan', this)">🌱 Vegan/Vegan-Friendly</button>
   <button class="filter-btn" onclick="filter('meat', this)">🥩 Carnivore Picks</button>
   <button class="filter-btn" onclick="filter('chase', this)">⚡ Chase OpenTable</button>
@@ -43,16 +42,42 @@
 </div>
 
 <div class="content">
-  <div id="statesMount"></div>
-
-  <div style="text-align:center; font-size:11px; color:#999; padding: 8px 0 24px;">
-    ⚡ Chase = eligible for Chase Sapphire OpenTable dining credit · Links verified July 2026
+  <div id="listMount">
+    <div id="statesMount"></div>
+    <div style="text-align:center; font-size:11px; color:#999; padding: 8px 0 24px;">
+      ⚡ Chase = eligible for Chase Sapphire OpenTable dining credit
+    </div>
   </div>
+  <div id="detailMount" style="display:none;"></div>
 </div>
 
 <button class="back-to-top" id="backToTop" onclick="scrollToTop()" aria-label="Back to top">↑</button>
 
-<script src="data.js"></script>
+<div class="modal-overlay" id="addModal" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Restaurant</h3>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+    <form id="addForm" onsubmit="submitAddRestaurant(event)">
+      <label>Name<input name="name" required></label>
+      <label>City<input name="city" required></label>
+      <label>State<input name="state" required placeholder="e.g. New Mexico"></label>
+      <label>Type / Cuisine<input name="type" placeholder="e.g. Farm-to-Table · 123 Main St"></label>
+      <label>Description<textarea name="desc" placeholder="What's it like? What should we order?"></textarea></label>
+      <div class="tag-checks">
+        <label><input type="checkbox" name="tags" value="vegan"> 🌱 Vegan-friendly</label>
+        <label><input type="checkbox" name="tags" value="meat"> 🥩 Carnivore pick</label>
+        <label><input type="checkbox" name="tags" value="reserve"> 📅 Needs reservation</label>
+        <label><input type="checkbox" name="tags" value="chase"> ⚡ Chase OpenTable</label>
+        <label><input type="checkbox" name="tags" value="walkin"> 🚶 Walk-in OK</label>
+      </div>
+      <button type="submit" class="btn-save">Save Restaurant</button>
+      <span id="addStatus"></span>
+    </form>
+  </div>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>
