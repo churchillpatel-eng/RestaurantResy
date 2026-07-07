@@ -44,6 +44,16 @@
 <div class="content">
   <div id="listMount">
     <div id="statesMount"></div>
+    <empty-state id="noResultsState" style="display:none"
+      icon="🔍" heading="No restaurants match"
+      message="Try a different search term, or clear the active filter.">
+      <button class="btn-save" onclick="clearFilters()">Clear filters</button>
+    </empty-state>
+    <empty-state id="noRestaurantsState" style="display:none"
+      icon="🍽️" heading="No restaurants yet"
+      message="Add the first one to start building your guide.">
+      <button class="btn-save" onclick="openAddModal()">+ Add Restaurant</button>
+    </empty-state>
     <div style="text-align:center; font-size:11px; color:#999; padding: 8px 0 24px;">
       ⚡ Chase = eligible for Chase Sapphire OpenTable dining credit
     </div>
@@ -53,14 +63,14 @@
 
 <button class="back-to-top" id="backToTop" onclick="scrollToTop()" aria-label="Back to top">↑</button>
 
-<div class="modal-overlay" id="addModal" style="display:none;">
+<app-modal id="addModal" label="Add Restaurant">
   <div class="modal">
     <div class="modal-header">
       <h3>Add Restaurant</h3>
-      <button class="modal-close" onclick="closeAddModal()">✕</button>
+      <button class="modal-close" onclick="closeAddModal()" aria-label="Close">✕</button>
     </div>
     <form id="addForm" onsubmit="submitAddRestaurant(event)">
-      <label>Name<input name="name" required></label>
+      <label>Name<input name="name" required autofocus></label>
       <label>City<input name="city" required></label>
       <label>State<input name="state" required placeholder="e.g. New Mexico"></label>
       <label>Type / Cuisine<input name="type" placeholder="e.g. Farm-to-Table · 123 Main St"></label>
@@ -73,11 +83,12 @@
         <label><input type="checkbox" name="tags" value="walkin"> 🚶 Walk-in OK</label>
       </div>
       <button type="submit" class="btn-save">Save Restaurant</button>
-      <span id="addStatus"></span>
+      <status-message id="addStatus"></status-message>
     </form>
   </div>
-</div>
+</app-modal>
 
+<script src="components.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -115,6 +115,15 @@ function renderList() {
   document.getElementById('detailMount').style.display = 'none';
   document.getElementById('listMount').style.display = '';
 
+  const noRestaurantsState = document.getElementById('noRestaurantsState');
+  if (ALL_RESTAURANTS.length === 0) {
+    document.getElementById('statesMount').innerHTML = '';
+    noRestaurantsState.style.display = '';
+    renderCityFilterButtons();
+    return;
+  }
+  noRestaurantsState.style.display = 'none';
+
   ALL_STATES = [...new Set(ALL_CITIES.map(c => c.state))].sort();
   document.getElementById('statesMount').innerHTML = ALL_STATES.map(renderState).join('\n');
   renderCityFilterButtons();
@@ -141,10 +150,17 @@ function filter(tag, btn) {
   applyFilters();
 }
 
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  const allBtn = document.querySelector('.filter-btn');
+  filter('all', allBtn);
+}
+
 function applyFilters() {
   const query = document.getElementById('searchInput').value.trim().toLowerCase();
   const isFiltering = query !== '' || currentFilter !== 'all';
   let firstVisible = null;
+  let anyVisibleAtAll = false;
 
   document.querySelectorAll('.state-section').forEach(section => {
     let anyVisible = false;
@@ -155,12 +171,17 @@ function applyFilters() {
       card.classList.toggle('hidden', !show);
       if (show) {
         anyVisible = true;
+        anyVisibleAtAll = true;
         if (!firstVisible) firstVisible = card;
       }
     });
 
     section.open = isFiltering ? anyVisible : section.hasAttribute('data-default-open');
   });
+
+  const noResults = isFiltering && !anyVisibleAtAll;
+  document.getElementById('noResultsState').style.display = noResults ? '' : 'none';
+  document.getElementById('statesMount').style.display = noResults ? 'none' : '';
 
   if (isFiltering && firstVisible) {
     firstVisible.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -169,36 +190,29 @@ function applyFilters() {
 
 // ─── DETAIL VIEW (#/restaurant/:id) ─────────────────────────────────────────────
 
-function starRow(current, editable) {
-  let html = '<div class="star-row">';
-  for (let i = 1; i <= 5; i++) {
-    const filled = current && i <= current;
-    html += editable
-      ? `<span class="star ${filled ? 'filled' : ''}" data-value="${i}" onclick="setRating(${i})">★</span>`
-      : `<span class="star ${filled ? 'filled' : ''}">★</span>`;
-  }
-  return html + '</div>';
-}
-
-let detailDraftRating = null;
+let currentDetailRestaurant = null;
 
 async function renderDetail(id) {
   document.getElementById('listMount').style.display = 'none';
   const mount = document.getElementById('detailMount');
   mount.style.display = '';
-  mount.innerHTML = `<div class="detail-loading">Loading…</div>`;
+  mount.setAttribute('aria-busy', 'true');
+  mount.innerHTML = `<div class="detail-loading" role="status">Loading…</div>`;
 
   let r;
   try {
     r = await api(`/api/restaurants/${id}`);
   } catch (e) {
-    mount.innerHTML = `<div class="detail-loading">Could not load restaurant: ${escapeHtml(e.message)}</div><a href="#/">← Back</a>`;
+    mount.innerHTML = `<div class="detail-loading" role="alert">Could not load restaurant: ${escapeHtml(e.message)}</div><a href="#/" class="back-link">← Back</a>`;
+    mount.removeAttribute('aria-busy');
     return;
   }
+  mount.removeAttribute('aria-busy');
+  currentDetailRestaurant = r;
 
-  detailDraftRating = r.rating;
-
-  const photosHtml = r.photos.map(p => `<img class="photo-thumb" src="${p.url}" alt="">`).join('');
+  const photosHtml = r.photos.map(p =>
+    `<img class="photo-thumb" src="${p.url}" alt="Photo of ${escapeHtml(r.name)}">`
+  ).join('');
 
   mount.innerHTML = `
     <a href="#/" class="back-link">← Back to all restaurants</a>
@@ -221,67 +235,65 @@ async function renderDetail(id) {
           <input type="checkbox" id="visitedCheck" ${r.visited ? 'checked' : ''}> We've been here
         </label>
         <div class="rating-block">
-          <span>Rating:</span>
-          ${starRow(r.rating, true)}
+          <span id="ratingLabel">Rating:</span>
+          <star-rating id="ratingInput" value="${r.rating || ''}" aria-labelledby="ratingLabel"></star-rating>
         </div>
+        <label for="notesText" class="sr-only">Notes</label>
         <textarea id="notesText" placeholder="What did you think? Dishes to order again, service notes, etc.">${escapeHtml(r.notes || '')}</textarea>
-        <button class="btn-save" onclick="saveNote('${id}')">Save Notes</button>
-        <span id="noteSaveStatus"></span>
+        <button class="btn-save" id="saveNoteBtn" onclick="saveNote('${id}', this)">Save Notes</button>
+        <status-message id="noteSaveStatus"></status-message>
 
         <h3>Photos</h3>
         <div class="photo-grid" id="photoGrid">${photosHtml}</div>
-        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="uploadPhoto('${id}')">
-        <button class="btn-save" onclick="document.getElementById('photoInput').click()">📷 Add Photo</button>
-        <span id="photoUploadStatus"></span>
+        <label for="photoInput" class="sr-only">Add a photo</label>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="uploadPhoto('${id}', this)">
+        <button class="btn-save" id="addPhotoBtn" onclick="document.getElementById('photoInput').click()">📷 Add Photo</button>
+        <status-message id="photoUploadStatus"></status-message>
       </div>
     </div>
   `;
 }
 
-function setRating(value) {
-  detailDraftRating = detailDraftRating === value ? null : value;
-  document.querySelectorAll('.rating-block .star').forEach((el, i) => {
-    el.classList.toggle('filled', detailDraftRating && i < detailDraftRating);
-  });
-}
-
-async function saveNote(id) {
+async function saveNote(id, btn) {
   const status = document.getElementById('noteSaveStatus');
-  status.textContent = 'Saving…';
+  status.show('Saving…');
   try {
-    await api(`/api/restaurants/${id}/note`, {
+    await withButtonLoading(btn, 'Saving…', () => api(`/api/restaurants/${id}/note`, {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         visited: document.getElementById('visitedCheck').checked,
-        rating: detailDraftRating,
+        rating: document.getElementById('ratingInput').value,
         notes: document.getElementById('notesText').value,
       }),
-    });
-    status.textContent = '✓ Saved';
-    setTimeout(() => { status.textContent = ''; }, 2000);
+    }));
+    status.show('✓ Saved', 'success');
   } catch (e) {
-    status.textContent = 'Error: ' + e.message;
+    status.show('Error: ' + e.message, 'error');
   }
 }
 
-async function uploadPhoto(id) {
-  const input = document.getElementById('photoInput');
+async function uploadPhoto(id, input) {
   const file = input.files[0];
   if (!file) return;
   const status = document.getElementById('photoUploadStatus');
-  status.textContent = 'Uploading…';
+  const btn = document.getElementById('addPhotoBtn');
+  status.show('Uploading…');
 
   const form = new FormData();
   form.append('photo', file);
 
   try {
-    const photo = await api(`/api/restaurants/${id}/photos`, { method: 'POST', body: form });
-    document.getElementById('photoGrid').insertAdjacentHTML('beforeend', `<img class="photo-thumb" src="${photo.url}" alt="">`);
-    status.textContent = '✓ Uploaded';
-    setTimeout(() => { status.textContent = ''; }, 2000);
+    const photo = await withButtonLoading(btn, 'Uploading…', () =>
+      api(`/api/restaurants/${id}/photos`, { method: 'POST', body: form })
+    );
+    const name = currentDetailRestaurant?.name || '';
+    document.getElementById('photoGrid').insertAdjacentHTML(
+      'beforeend', `<img class="photo-thumb" src="${photo.url}" alt="Photo of ${escapeHtml(name)}">`
+    );
+    status.show('✓ Uploaded', 'success');
   } catch (e) {
-    status.textContent = 'Error: ' + e.message;
+    status.show('Error: ' + e.message, 'error');
   }
   input.value = '';
 }
@@ -289,23 +301,34 @@ async function uploadPhoto(id) {
 // ─── ADD RESTAURANT ─────────────────────────────────────────────────────────────
 
 function openAddModal() {
-  document.getElementById('addModal').style.display = 'flex';
+  document.getElementById('addModal').open = true;
 }
 function closeAddModal() {
-  document.getElementById('addModal').style.display = 'none';
-  document.getElementById('addForm').reset();
-  document.getElementById('addStatus').textContent = '';
+  document.getElementById('addModal').open = false;
 }
+
+// Whichever way the modal closes (Escape, backdrop click, ✕ button, or a
+// successful save), reset the form and clear any leftover status message.
+document.getElementById('addModal').addEventListener('modal-close', () => {
+  document.getElementById('addForm').reset();
+  document.getElementById('addStatus').clear();
+});
 
 async function submitAddRestaurant(ev) {
   ev.preventDefault();
   const f = ev.target;
+  const submitBtn = f.querySelector('button[type="submit"]');
   const tags = [...f.querySelectorAll('input[name="tags"]:checked')].map(cb => cb.value);
   const status = document.getElementById('addStatus');
-  status.textContent = 'Saving…';
 
+  if (!f.name.value.trim() || !f.city.value.trim() || !f.state.value.trim()) {
+    status.show('Name, city, and state are required.', 'error');
+    return;
+  }
+
+  status.show('Saving…');
   try {
-    await api('/api/restaurants', {
+    await withButtonLoading(submitBtn, 'Saving…', () => api('/api/restaurants', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
@@ -316,12 +339,12 @@ async function submitAddRestaurant(ev) {
         desc: f.desc.value,
         tags,
       }),
-    });
+    }));
     await loadData();
     closeAddModal();
     route();
   } catch (e) {
-    status.textContent = 'Error: ' + e.message;
+    status.show('Error: ' + e.message, 'error');
   }
 }
 
@@ -348,11 +371,16 @@ function scrollToTop() {
 // ─── INIT ───────────────────────────────────────────────────────────────────────
 
 async function init() {
+  document.getElementById('statesMount').innerHTML = renderSkeletonCards(6);
+  document.getElementById('statesMount').setAttribute('aria-busy', 'true');
+
   try {
     await loadData();
   } catch (e) {
-    document.getElementById('listMount').innerHTML = `<div class="detail-loading">Could not load restaurants: ${escapeHtml(e.message)}</div>`;
+    document.getElementById('statesMount').innerHTML = `<div class="detail-loading" role="alert">Could not load restaurants: ${escapeHtml(e.message)}</div>`;
     return;
+  } finally {
+    document.getElementById('statesMount').removeAttribute('aria-busy');
   }
   route();
 }
