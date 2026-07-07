@@ -33,17 +33,28 @@ function badgeForVisited(r) {
   return r.visited ? `<span class="badge badge-visited">✓ Visited${r.rating ? ' · ' + '★'.repeat(r.rating) : ''}</span>` : '';
 }
 
-function formatReservationDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso + 'T00:00:00');
-  if (isNaN(d)) return iso;
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+// sqlDatetime is "YYYY-MM-DD HH:MM:SS" in the browser's own local wall-clock
+// time (no timezone conversion — matches what the user typed in), e.g. from
+// reservation_datetime. notesUpdatedAt (a separate call site) is real UTC
+// and is formatted with formatUtcTimestamp instead.
+function formatLocalDateTime(sqlDatetime, opts) {
+  if (!sqlDatetime) return '';
+  const d = new Date(sqlDatetime.replace(' ', 'T'));
+  if (isNaN(d)) return sqlDatetime;
+  return d.toLocaleString(undefined, opts || { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function formatUtcTimestamp(sqlUtcDatetime) {
+  if (!sqlUtcDatetime) return '';
+  const d = new Date(sqlUtcDatetime.replace(' ', 'T') + 'Z');
+  if (isNaN(d)) return sqlUtcDatetime;
+  return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
 function badgeForReservation(r) {
-  if (!r.reservationBooked) return '';
-  const dateText = r.reservationDate ? ' · ' + escapeHtml(formatReservationDate(r.reservationDate)) : '';
-  return `<span class="badge badge-reservation">📅 Reserved${dateText}</span>`;
+  if (!r.nextReservation) return '';
+  const dateText = formatLocalDateTime(r.nextReservation, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  return `<span class="badge badge-reservation">📅 Reserved · ${escapeHtml(dateText)}</span>`;
 }
 
 function renderCard(r) {
@@ -248,15 +259,6 @@ async function renderDetail(id) {
         <label class="visited-check">
           <input type="checkbox" id="visitedCheck" ${r.visited ? 'checked' : ''}> We've been here
         </label>
-        <div class="reservation-block">
-          <label class="visited-check">
-            <input type="checkbox" id="reservationCheck" ${r.reservationBooked ? 'checked' : ''}> Reservation booked
-          </label>
-          <label class="reservation-date-label">
-            Date
-            <input type="date" id="reservationDate" value="${r.reservationDate || ''}">
-          </label>
-        </div>
         <div class="rating-block">
           <span id="ratingLabel">Rating:</span>
           <star-rating id="ratingInput" value="${r.rating || ''}" aria-labelledby="ratingLabel"></star-rating>
@@ -265,6 +267,16 @@ async function renderDetail(id) {
         <textarea id="notesText" placeholder="What did you think? Dishes to order again, service notes, etc.">${escapeHtml(r.notes || '')}</textarea>
         <button class="btn-save" id="saveNoteBtn" onclick="saveNote('${id}', this)">Save Notes</button>
         <status-message id="noteSaveStatus"></status-message>
+        ${r.notesUpdatedAt ? `<div class="notes-timestamp">Last updated ${formatUtcTimestamp(r.notesUpdatedAt)}</div>` : ''}
+
+        <h3>Reservations</h3>
+        <div class="reservation-add">
+          <label for="reservationDatetime" class="sr-only">Reservation date and time</label>
+          <input type="datetime-local" id="reservationDatetime">
+          <button class="btn-save" id="addReservationBtn" onclick="addReservation('${id}', this)">+ Add Reservation</button>
+        </div>
+        <status-message id="reservationStatus"></status-message>
+        <div id="reservationsList">${renderReservationsList(r.reservations, id)}</div>
 
         <h3>Photos</h3>
         <div class="photo-grid" id="photoGrid">${photosHtml}</div>
@@ -281,18 +293,69 @@ async function saveNote(id, btn) {
   const status = document.getElementById('noteSaveStatus');
   status.show('Saving…');
   try {
-    await withButtonLoading(btn, 'Saving…', () => api(`/api/restaurants/${id}/note`, {
+    const result = await withButtonLoading(btn, 'Saving…', () => api(`/api/restaurants/${id}/note`, {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         visited: document.getElementById('visitedCheck').checked,
         rating: document.getElementById('ratingInput').value,
         notes: document.getElementById('notesText').value,
-        reservationBooked: document.getElementById('reservationCheck').checked,
-        reservationDate: document.getElementById('reservationDate').value || null,
       }),
     }));
     status.show('✓ Saved', 'success');
+    const stamp = document.querySelector('.notes-timestamp');
+    if (stamp) stamp.textContent = 'Last updated just now';
+  } catch (e) {
+    status.show('Error: ' + e.message, 'error');
+  }
+}
+
+function renderReservationsList(reservations, id) {
+  if (!reservations.length) {
+    return `<p class="reservation-empty">No reservations logged yet.</p>`;
+  }
+  return reservations.map(res => `
+    <div class="reservation-item" data-id="${res.id}">
+      <span class="reservation-datetime">${escapeHtml(formatLocalDateTime(res.datetime))}</span>
+      <button class="reservation-delete" onclick="deleteReservation('${id}', '${res.id}', this)" aria-label="Delete this reservation">✕</button>
+    </div>
+  `).join('');
+}
+
+async function addReservation(id, btn) {
+  const input = document.getElementById('reservationDatetime');
+  const status = document.getElementById('reservationStatus');
+
+  if (!input.value) {
+    status.show('Pick a date and time first.', 'error');
+    return;
+  }
+
+  status.show('Saving…');
+  try {
+    await withButtonLoading(btn, 'Saving…', () => api(`/api/restaurants/${id}/reservations`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ datetime: input.value }),
+    }));
+    const r = await api(`/api/restaurants/${id}`);
+    document.getElementById('reservationsList').innerHTML = renderReservationsList(r.reservations, id);
+    input.value = '';
+    status.show('✓ Reservation added', 'success');
+  } catch (e) {
+    status.show('Error: ' + e.message, 'error');
+  }
+}
+
+async function deleteReservation(id, reservationId, btn) {
+  const status = document.getElementById('reservationStatus');
+  try {
+    await withButtonLoading(btn, '…', () => api(`/api/restaurants/${id}/reservations/${reservationId}`, { method: 'DELETE' }));
+    document.querySelector(`.reservation-item[data-id="${reservationId}"]`)?.remove();
+    if (!document.querySelectorAll('.reservation-item').length) {
+      document.getElementById('reservationsList').innerHTML = `<p class="reservation-empty">No reservations logged yet.</p>`;
+    }
+    status.show('✓ Removed', 'success');
   } catch (e) {
     status.show('Error: ' + e.message, 'error');
   }

@@ -1,7 +1,7 @@
-import { json, error, rowToRestaurant } from '../../_utils.js';
+import { json, error, rowToRestaurant, toLocalDatetimeInput } from '../../_utils.js';
 
 const ONE_SQL = `
-  SELECT r.*, n.visited, n.rating, n.notes, n.reservation_booked, n.reservation_date
+  SELECT r.*, n.visited, n.rating, n.notes, n.updated_at AS notes_updated_at
   FROM restaurants r
   LEFT JOIN notes n ON n.restaurant_id = r.id
   WHERE r.id = ?
@@ -15,9 +15,18 @@ export async function onRequestGet({ env, params }) {
     'SELECT id, r2_key FROM photos WHERE restaurant_id = ? ORDER BY uploaded_at'
   ).bind(params.id).all();
 
+  const reservations = await env.DB.prepare(
+    'SELECT id, reservation_datetime FROM reservations WHERE restaurant_id = ? ORDER BY reservation_datetime DESC'
+  ).bind(params.id).all();
+
   return json({
     ...rowToRestaurant(row),
     photos: photos.results.map(p => ({ id: p.id, url: `/api/photos/${p.r2_key}` })),
+    reservations: reservations.results.map(r => ({
+      id: r.id,
+      datetime: r.reservation_datetime,
+      inputValue: toLocalDatetimeInput(r.reservation_datetime),
+    })),
   });
 }
 

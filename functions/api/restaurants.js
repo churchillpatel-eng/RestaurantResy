@@ -1,7 +1,9 @@
 import { json, error, cityKeyFor, rowToRestaurant } from '../_utils.js';
 
 const LIST_SQL = `
-  SELECT r.*, n.visited, n.rating, n.notes, n.reservation_booked, n.reservation_date
+  SELECT r.*, n.visited, n.rating, n.notes, n.updated_at AS notes_updated_at,
+    (SELECT MIN(res.reservation_datetime) FROM reservations res
+     WHERE res.restaurant_id = r.id AND res.reservation_datetime >= datetime('now')) AS next_reservation
   FROM restaurants r
   LEFT JOIN notes n ON n.restaurant_id = r.id
   ORDER BY r.state, r.city_label, r.name COLLATE NOCASE
