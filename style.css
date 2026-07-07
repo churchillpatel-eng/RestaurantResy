@@ -319,7 +319,12 @@
   .our-notes { margin-top: 20px; padding-top: 16px; border-top: 2px solid var(--border); }
   .our-notes h3 { font-size: 14px; color: var(--navy); margin-bottom: 10px; }
   .visited-check { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 12px; cursor: pointer; }
-  .badge-reservation { background: #E3F2FD; color: #0d47a1; border: 1px solid #90CAF9; }
+  .reservation-banner {
+    background: var(--chase-blue); color: white;
+    font-size: 12px; font-weight: 700;
+    padding: 7px 16px; text-align: center;
+    letter-spacing: 0.02em;
+  }
   .rating-block { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 12px; }
   #notesText { width: 100%; min-height: 90px; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 13px; resize: vertical; margin-bottom: 10px; }
   .notes-timestamp { font-size: 11px; color: #888; margin: 6px 0 4px; }

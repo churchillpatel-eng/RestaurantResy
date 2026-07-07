@@ -51,10 +51,13 @@ function formatUtcTimestamp(sqlUtcDatetime) {
   return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
-function badgeForReservation(r) {
+// A standalone banner at the top of the card (not just a small badge buried
+// among others) so an upcoming reservation is visible at a glance from the
+// main list, with no need to click into the restaurant's detail page.
+function reservationBanner(r) {
   if (!r.nextReservation) return '';
-  const dateText = formatLocalDateTime(r.nextReservation, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-  return `<span class="badge badge-reservation">📅 Reserved · ${escapeHtml(dateText)}</span>`;
+  const dateText = formatLocalDateTime(r.nextReservation, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  return `<div class="reservation-banner">📅 Reservation booked · ${escapeHtml(dateText)}</div>`;
 }
 
 function renderCard(r) {
@@ -68,6 +71,7 @@ function renderCard(r) {
 
   return `
 <div class="card" data-city="${r.city}" data-tags="${r.tags.join(' ')}" data-id="${r.id}">
+  ${reservationBanner(r)}
   <div class="card-header ${city.cls || ''}">
     <div>
       <div class="card-name"><a href="#/restaurant/${r.id}">${escapeHtml(r.name)}</a></div>
@@ -75,7 +79,6 @@ function renderCard(r) {
       <div class="badges">
         ${badgesHtml}
         ${badgeForVisited(r)}
-        ${badgeForReservation(r)}
       </div>
     </div>
     ${chaseHtml}
