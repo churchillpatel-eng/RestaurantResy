@@ -30,5 +30,7 @@ export function rowToRestaurant(row) {
     visited: !!row.visited,
     rating: row.rating,
     notes: row.notes,
+    reservationBooked: !!row.reservation_booked,
+    reservationDate: row.reservation_date,
   };
 }

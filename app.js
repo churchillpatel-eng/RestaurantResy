@@ -33,6 +33,19 @@ function badgeForVisited(r) {
   return r.visited ? `<span class="badge badge-visited">✓ Visited${r.rating ? ' · ' + '★'.repeat(r.rating) : ''}</span>` : '';
 }
 
+function formatReservationDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function badgeForReservation(r) {
+  if (!r.reservationBooked) return '';
+  const dateText = r.reservationDate ? ' · ' + escapeHtml(formatReservationDate(r.reservationDate)) : '';
+  return `<span class="badge badge-reservation">📅 Reserved${dateText}</span>`;
+}
+
 function renderCard(r) {
   const badgesHtml = r.badges.map(b => `<span class="badge ${b.cls}">${escapeHtml(b.text)}</span>`).join('\n            ');
   const chaseHtml = r.chase ? `<span class="chase-logo">${escapeHtml(r.chase)}</span>` : '';
@@ -51,6 +64,7 @@ function renderCard(r) {
       <div class="badges">
         ${badgesHtml}
         ${badgeForVisited(r)}
+        ${badgeForReservation(r)}
       </div>
     </div>
     ${chaseHtml}
@@ -234,6 +248,15 @@ async function renderDetail(id) {
         <label class="visited-check">
           <input type="checkbox" id="visitedCheck" ${r.visited ? 'checked' : ''}> We've been here
         </label>
+        <div class="reservation-block">
+          <label class="visited-check">
+            <input type="checkbox" id="reservationCheck" ${r.reservationBooked ? 'checked' : ''}> Reservation booked
+          </label>
+          <label class="reservation-date-label">
+            Date
+            <input type="date" id="reservationDate" value="${r.reservationDate || ''}">
+          </label>
+        </div>
         <div class="rating-block">
           <span id="ratingLabel">Rating:</span>
           <star-rating id="ratingInput" value="${r.rating || ''}" aria-labelledby="ratingLabel"></star-rating>
@@ -265,6 +288,8 @@ async function saveNote(id, btn) {
         visited: document.getElementById('visitedCheck').checked,
         rating: document.getElementById('ratingInput').value,
         notes: document.getElementById('notesText').value,
+        reservationBooked: document.getElementById('reservationCheck').checked,
+        reservationDate: document.getElementById('reservationDate').value || null,
       }),
     }));
     status.show('✓ Saved', 'success');

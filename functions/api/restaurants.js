@@ -1,7 +1,7 @@
 import { json, error, cityKeyFor, rowToRestaurant } from '../_utils.js';
 
 const LIST_SQL = `
-  SELECT r.*, n.visited, n.rating, n.notes
+  SELECT r.*, n.visited, n.rating, n.notes, n.reservation_booked, n.reservation_date
   FROM restaurants r
   LEFT JOIN notes n ON n.restaurant_id = r.id
   ORDER BY r.state, r.city_label, r.name COLLATE NOCASE

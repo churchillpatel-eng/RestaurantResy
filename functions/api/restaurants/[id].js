@@ -1,7 +1,7 @@
 import { json, error, rowToRestaurant } from '../../_utils.js';
 
 const ONE_SQL = `
-  SELECT r.*, n.visited, n.rating, n.notes
+  SELECT r.*, n.visited, n.rating, n.notes, n.reservation_booked, n.reservation_date
   FROM restaurants r
   LEFT JOIN notes n ON n.restaurant_id = r.id
   WHERE r.id = ?
