@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "restaurantresy",
-  "pages_build_output_dir": ".",
+  "pages_build_output_dir": "public",
   "compatibility_date": "2026-05-11",
   "d1_databases": [
     {
