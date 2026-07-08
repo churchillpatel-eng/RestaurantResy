@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-07T00:00:00.000Z",
+  "title": "Design System: Churchill & Sejal's Dining Guide",
+  "extensions": {
+    "colorMeta": {
+      "navy-deep": { "role": "primary", "displayName": "Navy Deep", "canonical": "#1F4E79", "tonalRamp": ["#0d2338", "#123252", "#18416b", "#1F4E79", "#2E6DA4", "#5C93C4", "#9BBEDA", "#D6E4F0"] },
+      "navy-deep-hover": { "role": "primary-hover", "displayName": "Navy Deep Hover", "canonical": "#2E6DA4", "tonalRamp": ["#122a3e", "#1a3d5c", "#22517a", "#2E6DA4", "#5C93C4", "#8AB4D6", "#B8D2E8", "#D6E4F0"] },
+      "taos-green": { "role": "secondary", "displayName": "Taos Green", "canonical": "#2D6A4F", "tonalRamp": ["#0f261b", "#173d2c", "#20533c", "#2D6A4F", "#4C8F70", "#7FB598", "#B3D5C2", "#D5E8D4"] },
+      "abq-clay": { "role": "tertiary", "displayName": "Albuquerque Clay", "canonical": "#843C0C", "tonalRamp": ["#2e1504", "#4a2207", "#67300a", "#843C0C", "#A85E2E", "#C68A5F", "#E0B99A", "#FCE4D6"] },
+      "paper-blue": { "role": "neutral-bg", "displayName": "Paper Blue", "canonical": "#f0f4f8", "tonalRamp": ["#1a2228", "#333f48", "#5c6b76", "#8a97a1", "#b8c3cb", "#d6e0e6", "#eaf0f4", "#f0f4f8"] },
+      "surface": { "role": "neutral-surface", "displayName": "Surface White", "canonical": "#ffffff", "tonalRamp": ["#e5e7ea", "#eceef0", "#f2f3f5", "#f7f8f9", "#fafbfc", "#fcfdfd", "#fefefe", "#ffffff"] },
+      "ink": { "role": "neutral-text", "displayName": "Ink", "canonical": "#222222", "tonalRamp": ["#000000", "#111111", "#1a1a1a", "#222222", "#444444", "#666666", "#999999", "#cccccc"] },
+      "border": { "role": "neutral-border", "displayName": "Border", "canonical": "#d0d8e0", "tonalRamp": ["#4a5560", "#69747f", "#8a95a0", "#aab5bf", "#c0cad2", "#d0d8e0", "#e2e8ed", "#f0f4f8"] },
+      "chase-blue": { "role": "accent-partner", "displayName": "Chase Blue", "canonical": "#117ACA", "tonalRamp": ["#062f4d", "#0a4a76", "#0e64a0", "#117ACA", "#4498D6", "#77B6E2", "#AAD4EE", "#DCEDF8"] },
+      "amber-star": { "role": "accent-rating", "displayName": "Amber Star", "canonical": "#f5b301", "tonalRamp": ["#4d3800", "#7a5800", "#a67800", "#d39900", "#f5b301", "#f7c233", "#fad778", "#fcecb8"] }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Page <h1> only." },
+      "title": { "displayName": "Title", "purpose": "Section headers, card names, modal/detail headings." },
+      "body": { "displayName": "Body", "purpose": "Descriptions, notes, form field text." },
+      "label": { "displayName": "Label", "purpose": "Filter buttons, badges, legend, timestamps." }
+    },
+    "shadows": [
+      { "name": "ambient-rest", "value": "0 1px 4px rgba(0,0,0,0.06)", "purpose": "Target at-rest elevation for cards and accordion sections (not yet implemented; current build is flat-at-rest)." },
+      { "name": "ambient-hover", "value": "0 4px 16px rgba(0,0,0,0.10)", "purpose": "Card hover state, currently implemented." },
+      { "name": "floating", "value": "0 2px 10px rgba(0,0,0,0.25)", "purpose": "Back-to-top button, floats free over content." },
+      { "name": "overlay-scrim", "value": "rgba(0,0,0,0.5)", "purpose": "Modal backdrop." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "0.15s-0.2s ease / all", "purpose": "Default transition speed for hover/focus color and shadow changes across buttons, cards, filters." },
+      { "name": "skeleton-shimmer", "value": "1.4s ease infinite, disabled under prefers-reduced-motion", "purpose": "Loading-state shimmer on skeleton cards." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "700px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Save Restaurant / main form submit action.",
+      "html": "<button class=\"ds-btn-primary\">Save Restaurant</button>",
+      "css": ".ds-btn-primary { background: #1F4E79; color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 700; font-family: 'Segoe UI', Arial, sans-serif; cursor: pointer; transition: background 0.15s; } .ds-btn-primary:hover { background: #2E6DA4; }"
+    },
+    {
+      "name": "Add Restaurant Pill",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Header pill CTA to open the add-restaurant modal.",
+      "html": "<button class=\"ds-btn-pill\">+ Add Restaurant</button>",
+      "css": ".ds-btn-pill { background: #ffffff; color: #1F4E79; border: none; border-radius: 20px; padding: 8px 16px; font-size: 12.5px; font-weight: 700; font-family: 'Segoe UI', Arial, sans-serif; cursor: pointer; white-space: nowrap; transition: background 0.15s; } .ds-btn-pill:hover { background: #D6E4F0; }"
+    },
+    {
+      "name": "Filter Pill",
+      "kind": "button",
+      "refersTo": "filter-pill",
+      "description": "Filter/toggle control; active state fills solid navy.",
+      "html": "<button class=\"ds-filter-pill\">🌱 Vegan/Vegan-Friendly</button>\n<button class=\"ds-filter-pill ds-filter-pill--active\">All</button>",
+      "css": ".ds-filter-pill { padding: 5px 14px; border-radius: 20px; border: 1.5px solid #d0d8e0; background: #ffffff; color: #444444; font-size: 12px; font-weight: 500; font-family: 'Segoe UI', Arial, sans-serif; cursor: pointer; transition: all 0.15s; } .ds-filter-pill:hover { border-color: #2E6DA4; color: #2E6DA4; } .ds-filter-pill--active { background: #1F4E79; color: #fff; border-color: #1F4E79; }"
+    },
+    {
+      "name": "Dietary Badge",
+      "kind": "chip",
+      "refersTo": "badge-vegan",
+      "description": "Small colored tag pairing an emoji glyph with a short label; vegan variant shown.",
+      "html": "<span class=\"ds-badge ds-badge--vegan\">🌱 Fully Vegan</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 600; font-family: 'Segoe UI', Arial, sans-serif; } .ds-badge--vegan { background: #E8F5E9; color: #2D6A4F; border: 1px solid #A5D6A7; }"
+    },
+    {
+      "name": "Chase Badge",
+      "kind": "chip",
+      "refersTo": "chase-badge",
+      "description": "Fixed-brand badge for Chase Sapphire OpenTable credit eligibility.",
+      "html": "<span class=\"ds-chase-badge\">⚡ Chase</span>",
+      "css": ".ds-chase-badge { display: inline-flex; align-items: center; gap: 3px; background: #117ACA; color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 700; font-family: 'Segoe UI', Arial, sans-serif; white-space: nowrap; }"
+    },
+    {
+      "name": "Restaurant Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Primary content card; header strip tinted by city color (SF blue shown).",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\"><div><div class=\"ds-card-name\">Restaurant Name</div><div class=\"ds-card-type\">Farm-to-Table · 123 Main St</div></div></div><div class=\"ds-card-body\"><p class=\"ds-card-desc\">What it's like, what to order.</p></div></div>",
+      "css": ".ds-card { background: #ffffff; border-radius: 12px; border: 1.5px solid #d0d8e0; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); transition: box-shadow 0.2s; } .ds-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); } .ds-card-header { background: #D6E4F0; padding: 13px 16px 10px; } .ds-card-name { font-size: 14px; font-weight: 700; color: #1a1a1a; } .ds-card-type { font-size: 11px; color: #666; margin-top: 2px; } .ds-card-body { padding: 12px 16px; } .ds-card-desc { font-size: 12.5px; color: #444; line-height: 1.5; }"
+    },
+    {
+      "name": "Star Rating",
+      "kind": "custom",
+      "refersTo": "star-rating",
+      "description": "Signature rating control; unfilled stars in border-gray, filled in amber. 44px min touch target on each glyph per WCAG 2.5.5.",
+      "html": "<span class=\"ds-star-rating\"><span class=\"ds-star ds-star--filled\">★</span><span class=\"ds-star ds-star--filled\">★</span><span class=\"ds-star ds-star--filled\">★</span><span class=\"ds-star\">★</span><span class=\"ds-star\">★</span></span>",
+      "css": ".ds-star-rating { display: inline-flex; gap: 2px; } .ds-star { font-size: 22px; line-height: 1; color: #d0d8e0; cursor: pointer; padding: 3px; border-radius: 4px; min-width: 28px; min-height: 28px; display: inline-flex; align-items: center; justify-content: center; } .ds-star:focus-visible { outline: 2px solid #2E6DA4; outline-offset: 1px; } .ds-star--filled { color: #f5b301; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "filter-pill",
+      "description": "Top search bar; pill-shaped, navy focus border.",
+      "html": "<input class=\"ds-search-input\" type=\"text\" placeholder=\"🔍 Search restaurants by name, cuisine, or city…\">",
+      "css": ".ds-search-input { width: 100%; max-width: 480px; padding: 9px 16px; border-radius: 20px; border: 1.5px solid #d0d8e0; font-size: 13px; font-family: 'Segoe UI', Arial, sans-serif; outline: none; } .ds-search-input:focus { border-color: #2E6DA4; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Field Guide",
+    "overview": "This is a personal reference book, not a product marketing site: a deep-navy spine gives it the authority of a well-kept field guide, while a per-city color system — blue for San Francisco, green for Taos, clay-orange for Albuquerque — works like chapter tabs, letting the eye jump to the right section at a glance. Emoji badges (🌱🥩⚡📅🚶) are the annotations scribbled in the margins: fast, legible, a little playful, never decorative for its own sake. It explicitly rejects the enterprise-dashboard and generic-SaaS-list look. There is no audience to convert, no metrics to perform for — every visual decision should serve one question, asked standing in a parking lot: where do we eat?",
+    "keyCharacteristics": [
+      "Deep navy as the authoritative spine color; per-city hues as wayfinding, not decoration.",
+      "Soft-lifted surfaces — cards read as physical index cards resting on the page, not flat rows in a data table.",
+      "Saturated, tactile fills on anything tappable; nothing ghost or outline-only.",
+      "Compact type at high information density, sized for scanning, not reading."
+    ],
+    "rules": [
+      { "name": "The City-Tab Rule", "body": "A city's color (SF blue / Taos green / ABQ clay) appears only on that city's section header, border, and heading text. It never bleeds into buttons, links, or global chrome — city color means \"which chapter,\" nothing else.", "section": "colors" },
+      { "name": "The Third-Party Color Rule", "body": "External brand marks — OpenTable red (#DA3743), Resy black (#1A1A1A), Chase blue (#117ACA) — are reproduced as-given on their respective link buttons and badges. Never retint them to fit the app's palette; they're identity marks the user needs to recognize instantly.", "section": "colors" },
+      { "name": "The One-Family Rule", "body": "Every text element uses the same system-sans stack. Don't introduce a second typeface for \"hierarchy\" — weight (400/500/600/700) and the four-step size scale are the only levers.", "section": "typography" },
+      { "name": "The Rest-Isn't-Flat Rule", "body": "Cards, the state accordion, and the detail panel always carry Ambient Rest elevation, even with nothing hovered. Flat-until-touched reads as a spreadsheet; this is a field guide.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep city color (SF blue / Taos green / ABQ clay) scoped to that city's own section per the City-Tab Rule.",
+      "Do reproduce OpenTable red, Resy black, and Chase blue exactly as their brand colors — they are identity marks, not part of this palette.",
+      "Do use saturated, confident fills on every tappable element (buttons, active filters, badges) — this is a fast-decision tool used on a phone, not a document to linger over.",
+      "Do give every animation a prefers-reduced-motion fallback, matching the existing skeleton shimmer's animation: none override.",
+      "Do keep the 44×44px minimum touch target on small interactive glyphs (star rating, close buttons), even when the visible icon is smaller."
+    ],
+    "donts": [
+      "Don't introduce a second typeface. One system-sans family, weight and size carry hierarchy.",
+      "Don't let city color leak outside its own section into global chrome, buttons, or links.",
+      "Don't flatten cards back to zero elevation at rest — Ambient Rest applies even when nothing is hovered (The Rest-Isn't-Flat Rule).",
+      "Don't reach for enterprise-dashboard or generic-SaaS-list patterns: no dense data-table rows, no gray-on-gray sterility, no \"this is trying to sell you something\" polish. This has an audience of two.",
+      "Don't use uppercase tracked labels for emphasis; weight and color already carry it here."
+    ]
+  }
+}

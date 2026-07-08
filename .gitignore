@@ -1,2 +1,7 @@
 node_modules/
 .wrangler/
+
+# impeccable live-mode runtime state (session tokens, pids, in-progress annotations)
+.impeccable/live/server.json
+.impeccable/live/sessions/
+.impeccable/live/annotations/
