@@ -21,24 +21,30 @@
   <input type="text" id="searchInput" placeholder="🔍 Search restaurants by name, cuisine, or city…" oninput="applyFilters()">
 </div>
 
-<div class="legend">
-  <div class="legend-item"><span class="badge badge-vegan">🌱 Fully Vegan</span> dedicated vegan menu</div>
-  <div class="legend-item"><span class="badge badge-vegan">🌿 Vegan-Friendly</span> strong plant-based options</div>
-  <div class="legend-item"><span class="badge badge-meat">🥩 Carnivore Pick</span> meat-forward</div>
-  <div class="legend-item"><span class="chase-logo">⚡ Chase</span> OpenTable Chase dining credit eligible</div>
-  <div class="legend-item"><span class="badge badge-res">📅 Reserve Ahead</span></div>
-  <div class="legend-item"><span class="badge badge-walkin">🚶 Walk-in OK</span></div>
-  <div class="legend-item"><span class="badge badge-visited">✓ Visited</span></div>
-</div>
+<div class="mobile-toggles" id="mobileToggles">
+  <button type="button" class="mobile-toggles-summary" id="mobileTogglesToggle" aria-expanded="false" aria-controls="mobileTogglesBody">🔍 Filters &amp; Legend</button>
 
-<div class="filters">
-  <span>Filter:</span>
-  <button class="filter-btn active" onclick="filter('all', this)">All</button>
-  <span id="cityFilters"></span>
-  <button class="filter-btn" onclick="filter('vegan', this)">🌱 Vegan/Vegan-Friendly</button>
-  <button class="filter-btn" onclick="filter('meat', this)">🥩 Carnivore Picks</button>
-  <button class="filter-btn" onclick="filter('chase', this)">⚡ Chase OpenTable</button>
-  <button class="filter-btn" onclick="filter('reserve', this)">📅 Needs Reservation</button>
+  <div id="mobileTogglesBody">
+    <div class="legend">
+      <div class="legend-item"><span class="badge badge-vegan">🌱 Fully Vegan</span> dedicated vegan menu</div>
+      <div class="legend-item"><span class="badge badge-vegan">🌿 Vegan-Friendly</span> strong plant-based options</div>
+      <div class="legend-item"><span class="badge badge-meat">🥩 Carnivore Pick</span> meat-forward</div>
+      <div class="legend-item"><span class="chase-logo">⚡ Chase</span> OpenTable Chase dining credit eligible</div>
+      <div class="legend-item"><span class="badge badge-res">📅 Reserve Ahead</span></div>
+      <div class="legend-item"><span class="badge badge-walkin">🚶 Walk-in OK</span></div>
+      <div class="legend-item"><span class="badge badge-visited">✓ Visited</span></div>
+    </div>
+
+    <div class="filters">
+      <span>Filter:</span>
+      <button class="filter-btn active" onclick="filter('all', this)">All</button>
+      <span id="cityFilters"></span>
+      <button class="filter-btn" onclick="filter('vegan', this)">🌱 Vegan/Vegan-Friendly</button>
+      <button class="filter-btn" onclick="filter('meat', this)">🥩 Carnivore Picks</button>
+      <button class="filter-btn" onclick="filter('chase', this)">⚡ Chase OpenTable</button>
+      <button class="filter-btn" onclick="filter('reserve', this)">📅 Needs Reservation</button>
+    </div>
+  </div>
 </div>
 
 <div class="content">
@@ -54,7 +60,7 @@
       message="Add the first one to start building your guide.">
       <button class="btn-save" onclick="openAddModal()">+ Add Restaurant</button>
     </empty-state>
-    <div style="text-align:center; font-size:11px; color:#999; padding: 8px 0 24px;">
+    <div style="text-align:center; font-size:11px; color:#555; padding: 8px 0 24px;">
       ⚡ Chase = eligible for Chase Sapphire OpenTable dining credit
     </div>
   </div>

@@ -290,13 +290,43 @@ async function renderDetail(id) {
       </div>
     </div>
   `;
+
+  // Autosave: rating and visited are single discrete choices, and notes is
+  // saved on blur — so navigating away (e.g. "Back to all restaurants")
+  // right after rating/checking/typing no longer silently discards it. The
+  // explicit "Save Notes" button still works the same for a deliberate save.
+  //
+  // Debounced rather than firing saveNote() straight from each listener:
+  // saveNote's PUT body is a full snapshot of all three fields read at
+  // request-construction time, so two changes fired back-to-back (e.g.
+  // checking "visited" then immediately picking a rating) start two
+  // concurrent requests with different snapshots, and whichever one's
+  // response lands last wins — silently clobbering the other field. A short
+  // debounce coalesces rapid changes into one save that reads settled state.
+  let autosaveTimer = null;
+  function scheduleAutosave() {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => saveNote(id, null), 250);
+  }
+
+  const visitedCheck = document.getElementById('visitedCheck');
+  const ratingInput = document.getElementById('ratingInput');
+  const notesText = document.getElementById('notesText');
+  visitedCheck.addEventListener('change', scheduleAutosave);
+  ratingInput.addEventListener('rating-change', scheduleAutosave);
+  notesText.addEventListener('blur', () => {
+    if (notesText.value !== (r.notes || '')) scheduleAutosave();
+  });
 }
 
+// btn is null for autosave triggers (rating/visited change, notes blur) that
+// aren't the explicit "Save Notes" button — in that case we skip the
+// disable/label-swap dance withButtonLoading does and just fire the request.
 async function saveNote(id, btn) {
   const status = document.getElementById('noteSaveStatus');
   status.show('Saving…');
   try {
-    const result = await withButtonLoading(btn, 'Saving…', () => api(`/api/restaurants/${id}/note`, {
+    const doSave = () => api(`/api/restaurants/${id}/note`, {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
@@ -304,7 +334,8 @@ async function saveNote(id, btn) {
         rating: document.getElementById('ratingInput').value,
         notes: document.getElementById('notesText').value,
       }),
-    }));
+    });
+    await (btn ? withButtonLoading(btn, 'Saving…', doSave) : doSave());
     status.show('✓ Saved', 'success');
     const stamp = document.querySelector('.notes-timestamp');
     if (stamp) stamp.textContent = 'Last updated just now';
@@ -452,6 +483,17 @@ function route() {
 }
 
 window.addEventListener('hashchange', route);
+
+// ─── MOBILE FILTERS/LEGEND TOGGLE ────────────────────────────────────────────────
+// No-op above the 700px breakpoint (the button is hidden there by CSS and the
+// body is always visible), so this is safe to wire up unconditionally.
+
+const mobileTogglesToggle = document.getElementById('mobileTogglesToggle');
+mobileTogglesToggle.addEventListener('click', () => {
+  const wrapper = document.getElementById('mobileToggles');
+  const open = wrapper.classList.toggle('open');
+  mobileTogglesToggle.setAttribute('aria-expanded', String(open));
+});
 
 // ─── BACK TO TOP ────────────────────────────────────────────────────────────────
 
