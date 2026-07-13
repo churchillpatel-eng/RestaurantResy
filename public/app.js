@@ -164,10 +164,12 @@ function matchesTag(card, tag) {
   if (tag === 'all') return true;
   const city = card.dataset.city;
   const tags = (card.dataset.tags || '').split(' ');
-  if (tag === 'vegan')   return tags.includes('vegan');
-  if (tag === 'meat')    return tags.includes('meat');
-  if (tag === 'chase')   return tags.includes('chase');
-  if (tag === 'reserve') return tags.includes('reserve');
+  if (tag === 'vegan')    return tags.includes('vegan');
+  if (tag === 'meat')     return tags.includes('meat');
+  if (tag === 'chase')    return tags.includes('chase');
+  if (tag === 'reserve')  return tags.includes('reserve');
+  if (tag === 'dive')     return tags.includes('dive');
+  if (tag === 'cocktail') return tags.includes('cocktail');
   return city === tag; // city filter buttons are keyed by city_key
 }
 

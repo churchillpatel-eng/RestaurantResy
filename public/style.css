@@ -51,6 +51,8 @@
   .badge-chase { background: #E3F2FD; color: var(--chase-blue); border: 1px solid #90CAF9; font-size: 10px; }
   .badge-res   { background: #FFF8E1; color: #7B5800; border: 1px solid #FFD54F; }
   .badge-walkin{ background: #F3E5F5; color: #6A1B9A; border: 1px solid #CE93D8; }
+  .badge-dive  { background: #EFEBE9; color: #4E342E; border: 1px solid #BCAAA4; }
+  .badge-cocktail { background: #FCE4EC; color: #AD1457; border: 1px solid #F48FB1; }
 
   .search-bar {
     background: white;

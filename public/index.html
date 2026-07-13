@@ -33,6 +33,8 @@
       <div class="legend-item"><span class="badge badge-res">📅 Reserve Ahead</span></div>
       <div class="legend-item"><span class="badge badge-walkin">🚶 Walk-in OK</span></div>
       <div class="legend-item"><span class="badge badge-visited">✓ Visited</span></div>
+      <div class="legend-item"><span class="badge badge-dive">🥃 Dive Bar</span></div>
+      <div class="legend-item"><span class="badge badge-cocktail">🍸 Cocktail Bar</span></div>
     </div>
 
     <div class="filters">
@@ -43,6 +45,8 @@
       <button class="filter-btn" onclick="filter('meat', this)">🥩 Carnivore Picks</button>
       <button class="filter-btn" onclick="filter('chase', this)">⚡ Chase OpenTable</button>
       <button class="filter-btn" onclick="filter('reserve', this)">📅 Needs Reservation</button>
+      <button class="filter-btn" onclick="filter('dive', this)">🥃 Dive Bars</button>
+      <button class="filter-btn" onclick="filter('cocktail', this)">🍸 Cocktail Bars</button>
     </div>
   </div>
 </div>
@@ -141,6 +145,8 @@
         <label><input type="checkbox" name="tags" value="reserve"> 📅 Needs reservation</label>
         <label><input type="checkbox" name="tags" value="chase"> ⚡ Chase OpenTable</label>
         <label><input type="checkbox" name="tags" value="walkin"> 🚶 Walk-in OK</label>
+        <label><input type="checkbox" name="tags" value="dive"> 🥃 Dive Bar</label>
+        <label><input type="checkbox" name="tags" value="cocktail"> 🍸 Cocktail Bar</label>
       </div>
       <button type="submit" class="btn-save">Save Restaurant</button>
       <status-message id="addStatus"></status-message>
